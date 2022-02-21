@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <title>{{ title }}</title>
+  <style></style>
+  <body>
+    <div class="bg-gray-300">
+      <nav class="flex absolute right-0 mr-12 items-center pt-4">
+        <a href="/" class="pr-4">Gmail</a>
+        <a href="/" class="pr-4">Images</a>
+        <script
+          src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+          defer
+        ></script>
+        {% if user.is_authenticated %}
+
+        <div x-data="{ dropdownOpen: false }" class="relative">
+          <button
+            @click="dropdownOpen = true"
+            class="flex z-10 bg-black-800 hover:bg-grey-700 focus:outline-none focus:bg-black-700"
+          >
+            <pre
+              class="tab"
+            >Welcome <b class="text-blue-600">{{ user.username }}</b></pre>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          <div
+            x-show="dropdownOpen"
+            @click="dropdownOpen = false"
+            class="fixed inset-0 h-full w-full"
+          ></div>
+          <div
+            x-show="dropdownOpen"
+            class="absolute left-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl"
+          >
+            <a
+              href="{% url 'logout' %}"
+              class="block px-4 py-2 text-md text-gray-500 font-bold border-b hover:bg-gray-200"
+              >Log Out</a
+            >
+          </div>
+
+          {% else %}
+          <a
+            href="{% url 'login' %}"
+            class="p-2 text-center text-white bg-blue-600 rounded hover:bg-blue-700"
+            >Sign In</a
+          >
+          {% endif %}
+        </div>
+      </nav>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'filter.js' %}"></script>
+
+    <div
+      class="grid grid-cols-3 xs:grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4"
+    >
+      <div class="col-span-2 xs:col-span-1 sm:col-span-2 lg:col-span-4 text-center">
+        <section
+          class="container max-w-screen-lg mx-auto mt-24 pb-10 flex justify-center"
+        >
+          <img
+            src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+            alt="screenshot"
+          />
+        </section>
+        <form method="GET" action="{% url 'home' %}">
+          <input
+            class="border-2 border-gray-400 pl-10 py-2 w-4/12 rounded-full hover:shadow-lg"
+            type="text"
+            name="search"
+          />
+          <br />
+          <br />
+          <button type="submit" class="border-2 bg-gray-200 rounded p-2">
+            Google Search
+          </button>
+          <a href="/" class="border-2 bg-gray-200 rounded p-2"
+            >I'm Feeling Lucky</a
+          >
+        </form>
+      </div>
+      <div class="mt-24">
+        {% if keywords %}
+        <b> All Keywords:</b> <br />
+        {% for keys in keywords%}
+        <input
+          class="filter-box"
+          type="checkbox"
+          data-filter="keyword"
+          value="{{keys.keyword}}"
+        />
+        <label for="keywords"
+          >{{ keys.keyword }} ({{ keys.counter }} times found)</label
+        ><br />
+        {% endfor %} {%endif%} {% if users %}
+        <b>All Users:</b><br />
+        {% for user in users %}
+        <input
+          class="filter-box"
+          type="checkbox"
+          data-filter="user"
+          value="{{user.username}}"
+        />
+        <label for="user">{{user.username}}</label><br />
+        {% endfor %} {%endif%}
+
+        <b>Time Range:</b><br />
+        <input class="filter-box" type="checkbox" data-filter="time" value='0' />
+        <label for="time">See data from today</label><br />
+        <input class="filter-box" type="checkbox" data-filter="time" value='1' />
+        <label for="time">See data from yesterday</label><br />
+        <input class="filter-box" type="checkbox" data-filter="time" value='2' />
+        <label for="time">See data from last week</label><br />
+        <input class="filter-box" type="checkbox" data-filter="time" value='3' />
+        <label for="time">See data from last month</label><br />
+      </div>
+    </div>
+    {% if data %}
+    <div id="filterresult">
+      <p class="pl-12 text-xl text-gray-500">Search History</p>
+      {% for result in data %} {% for result in result %}
+      <div class="pl-12">
+        <h3 class="text-xl font-semibold text-blue-700">
+          <a href="{{ result.1 }}">{{ result.0 }}</a>
+        </h3>
+        <h3 class="text-green-800">{{ result.1 }}</h3>
+        <h3>{{ result.2 }}</h3>
+      </div>
+      {% endfor %} {% endfor %}
+    </div>
+    {%else%} {% if search_result %}
+    <p class="pl-12 text-xl text-gray-500">Search Results</p>
+    {% for result in search_result %}
+    <div class="pl-12">
+      <h3 class="text-xl font-semibold text-blue-700">
+        <a href="{{ result.1 }}">{{ result.0 }}</a>
+      </h3>
+      <h3 class="text-green-800">{{ result.1 }}</h3>
+      <h3>{{ result.2 }}</h3>
+    </div>
+    {% endfor %} {% else %}
+    <div
+      class="absolute flex justify-between items-center inset-x-0 bottom-0 h-16"
+    >
+      <div>
+        <a href="/" class="pl-8 pr-2">About</a>
+        <a href="/" class="pr-2">Advertising</a>
+        <a href="/" class="pr-2">Business</a>
+        <a href="/" class="pr-2">How Search works</a>
+      </div>
+      <div>
+        <a href="/" class="pr-2">Privacy</a>
+        <a href="/" class="pr-2">Terms</a>
+        <a href="/" class="pr-8">Settings</a>
+      </div>
+    </div>
+    {% endif %} {% endif %}
+  </body>
+</html>

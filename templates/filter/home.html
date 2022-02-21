@@ -1,0 +1,16 @@
+{% if data %}
+<div id="filterresult">
+  <p class="pl-12 text-xl text-gray-500">Search History</p>
+  {% for result in data %} {% for result in result %}
+  <div class="pl-12">
+    <h3 class="text-xl font-semibold text-blue-700">
+      <a href="{{ result.1 }}">{{ result.0 }}</a>
+    </h3>
+    <h3 class="text-green-800">{{ result.1 }}</h3>
+    <h3>{{ result.2 }}</h3>
+  </div>
+  {% endfor %} {% endfor %}
+</div>
+{% else %}
+<p class="pl-12 text-xl text-gray-500">No Search History</p>
+{%endif%}

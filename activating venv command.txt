@@ -1,0 +1,7 @@
+creating folder command : virtualenv projectname
+
+activating virtualenv in PS or CMD : .\searchenv\Scripts\activate
+activate .env file in Git Bash : source .env
+run server : py manage.py runserver
+
+admin username : afid pass: afidafid
